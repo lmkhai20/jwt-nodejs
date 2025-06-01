@@ -24,9 +24,14 @@ const createNewUser = (email, password, username) => {
 }
 
 const getUserList = () => {
+    let users = [];
     connection.query('SELECT * FROM users',
         (error, results) => {
-            if (error) return res.json({ error: error });
+            if (error) return users;
+            else {
+                users = results;
+                return users;
+            }
     });
 }
 
