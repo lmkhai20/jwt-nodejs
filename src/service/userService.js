@@ -38,10 +38,6 @@ const checkUserEmail = (userEmail) => {
 const createNewUser = (email, password, username) => {
     return new Promise ( async (resolve, reject) => {
         try {
-            // connection.query('INSERT INTO users (email, password, username) VALUES (?,?,?)', [email, hashPassword, username],
-            //     (error, results) => {
-            //         if (error) return res.json({ error: error });
-            // });
             let check = await checkUserEmail(email);
             if(check) {
                 resolve();
@@ -59,7 +55,7 @@ const createNewUser = (email, password, username) => {
 let findUserById = (userId) => {
     return new Promise( async (resolve, reject) => {
         try {
-            let user = '';
+            let user = {};
             user = await db.User.findOne({
                 where: { id: userId },
                 attributes: {
