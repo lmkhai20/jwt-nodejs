@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
 import mysql from 'mysql2';
+import db from '../models/index';
 
 
 // Create the connection to database
@@ -15,27 +16,134 @@ const hashUserPassword = (userPassword) => {
     return hashPassword;
 }
 
+const checkUserEmail = (userEmail) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { email: userEmail }
+            })
+
+            if(user) {
+                resolve(true);
+            }
+            else {
+                resolve(false);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 const createNewUser = (email, password, username) => {
-    let hashPassword = hashUserPassword(password);
-    connection.query('INSERT INTO users (email, password, username) VALUES (?,?,?)', [email, hashPassword, username],
-        (error, results) => {
-            if (error) return res.json({ error: error });
-    });
+    return new Promise ( async (resolve, reject) => {
+        try {
+            // connection.query('INSERT INTO users (email, password, username) VALUES (?,?,?)', [email, hashPassword, username],
+            //     (error, results) => {
+            //         if (error) return res.json({ error: error });
+            // });
+            let check = await checkUserEmail(email);
+            if(check) {
+                resolve();
+            } else {
+                let hashPassword = hashUserPassword(password);
+                await db.User.create({ email: email, password: hashPassword, username: username });
+                resolve();
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let findUserById = (userId) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            let user = '';
+            user = await db.User.findOne({
+                where: { id: userId },
+                attributes: {
+                    exclude: 'password'
+                },
+                raw: true
+            })
+            if(user) {
+                resolve(user);
+            } else {
+                resolve(user);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
 }
 
 const getUserList = () => {
-    let users = [];
-    connection.query('SELECT * FROM users',
-        (error, results) => {
-            if (error) return users;
-            else {
-                users = results;
-                return users;
-            }
+    return new Promise( async (resolve, reject) => {
+        try {
+            let users = '';
+            users = await db.User.findAll({
+                raw: true,
+                attributes: {
+                    exclude: 'password'
+                }
+            });
+            resolve(users);
+        } catch (e) {
+            reject(e);
+        }
     });
 }
 
+let deleteUser = (userId) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: userId }
+            });
+            if(user) {
+                await user.destroy();
+                resolve()
+            } else {
+                resolve();
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+let editUser = (data) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            if(!data.id) {
+                console.log(">>> ko co id");
+                resolve();
+            } else {
+                let user = await db.User.findOne({
+                    where: { id: data.id }
+                })
+                if(user){
+                    user.email = data.email;
+                    user.username = data.username;
+                    await user.save();
+                    resolve();
+                } else {
+                    console.log(">>> ko co user");
+                    resolve();
+                }
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+
 module.exports = {
     createNewUser,
-    getUserList
+    getUserList,
+    deleteUser,
+    findUserById,
+    editUser
 }
