@@ -77,6 +77,27 @@ let findUserById = (userId) => {
 const getUserList = () => {
     return new Promise( async (resolve, reject) => {
         try {
+            // test relationship
+            let us = await db.User.findOne({
+                where: { id: 2 },
+                attributes: ['id', 'username', 'email'],
+                include: { model: db.Group, attributes: ['name', 'description'] },
+                raw: true,
+                nest: true
+            })
+
+            console.log('>>>> check new user: ', us);
+
+            let r = await db.Role.findAll({
+                include: { model: db.Group , where: { id: 2 }},
+                raw: true,
+                nest: true
+            })
+
+            console.log('>>>> check user: ', r);
+
+
+
             let users = '';
             users = await db.User.findAll({
                 raw: true,
