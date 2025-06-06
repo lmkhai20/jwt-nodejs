@@ -24,7 +24,7 @@ let handleRegister = async (req, res) => {
                 DT: '' // data
             })
         }
-        
+
         let data = await authService.registerNewUser(req.body);
 
         return res.status(200).json({
@@ -40,10 +40,28 @@ let handleRegister = async (req, res) => {
             DT: '' // data
         })
     }
-    console.log('>>> register', req.body);
+}
+
+let handleLogin = async (req, res) => {
+    try {
+        let data = await authService.loginUser(req.body);
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            EM: 'error form server', // error message
+            EC: '-1', // error code
+            DT: '' // data
+        })
+    }
 }
 
 module.exports = {
     testApi,
-    handleRegister
+    handleRegister,
+    handleLogin
 }

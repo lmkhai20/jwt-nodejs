@@ -86,7 +86,7 @@ const getUserList = () => {
                 nest: true
             })
 
-            console.log('>>>> check new user: ', us);
+            // console.log('>>>> check new user: ', us);
 
             let r = await db.Role.findAll({
                 include: { model: db.Group , where: { id: 2 }},
@@ -94,7 +94,7 @@ const getUserList = () => {
                 nest: true
             })
 
-            console.log('>>>> check user: ', r);
+            // console.log('>>>> check user: ', r);
 
 
 
