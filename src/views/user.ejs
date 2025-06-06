@@ -55,7 +55,13 @@
                             <td><%= userList[i].username %></td>
                             <td>
                                 <a href="/users/get-user-edit/<%=userList[i].id %>" id="edit" class="btn btn-warning">Edit</a>
-                                <a href="/users/delete-user/<%=userList[i].id %>" id="delete" class="btn btn-danger">Delete</a>
+                                <!-- <a href="/users/delete-user/<%=userList[i].id %>" id="delete" class="btn btn-danger">Delete</a> -->
+                                
+                                <form style="display: inline;" action="/users/delete-user/<%=userList[i].id %>" method="POST">
+                                    <button class="btn btn-danger">
+                                        Delete
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         <% } %>
