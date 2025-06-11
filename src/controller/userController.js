@@ -25,7 +25,7 @@ let readFunc = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        return res.status(200).json({
+        return res.status(500).json({
             EM: 'error form server', // error message
             EC: -1, // error code
             DT: '' // data
@@ -39,7 +39,7 @@ let createFunc = async (req, res) => {
 
     } catch (e) {
         console.log(e);
-        return res.status(200).json({
+        return res.status(500).json({
             EM: 'error form server', // error message
             EC: -1, // error code
             DT: '' // data
@@ -53,7 +53,7 @@ let updateFunc = async (req, res) => {
 
     } catch (e) {
         console.log(e);
-        return res.status(200).json({
+        return res.status(500).json({
             EM: 'error form server', // error message
             EC: -1, // error code
             DT: '' // data
@@ -71,7 +71,7 @@ let deleteFunc = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        return res.status(200).json({
+        return res.status(500).json({
             EM: 'error form server', // error message
             EC: -1, // error code
             DT: '' // data
