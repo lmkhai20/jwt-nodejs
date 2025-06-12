@@ -1,4 +1,5 @@
 import db from '../models/index';
+import { hashUserPassword, checkEmailExist, checkPhoneExist } from './authService';
 
 let getAllUser = () => {
     return new Promise( async (resolve, reject) => {
@@ -37,8 +38,11 @@ let getUserWithPaginate = (page, limit) => {
             const {count, rows} = await db.User.findAndCountAll({
                 offset: offset,
                 limit: limit,
-                attributes: ['id', 'username', 'email', 'phone', 'sex'],
-                include: { model: db.Group, attributes: ['name', 'description']}
+                attributes: ['id', 'username', 'email', 'phone', 'sex', 'address'],
+                include: { model: db.Group, attributes: ['id', 'name', 'description']},
+                order: [
+                    ['id', 'DESC']
+                ]
             })
             let totalPages = Math.ceil(count/limit);
             let data = {
@@ -57,8 +61,53 @@ let getUserWithPaginate = (page, limit) => {
     })
 }
 
-let createUser = () => {
+let createNewUser = (userData) => {
+    return new Promise( async (resolve, reject) => {
+        try {
 
+            // check email, phone
+            let isEmailExist = await checkEmailExist(userData.email);
+            if(isEmailExist === true){
+                resolve({
+                    EM: 'The email is already exist',
+                    EC: 5,
+                    DT: 'email'
+                })
+            }
+            let isPhoneExist = await checkPhoneExist(userData.phone);
+            if(isPhoneExist === true){
+                resolve({
+                    EM: 'The phonenumber is already exist',
+                    EC: 6,
+                    DT: 'phone'
+                })
+            }
+
+            // hash user password
+            if(!isEmailExist && !isPhoneExist) {
+                let hashPassword = hashUserPassword(userData.password);
+                await db.User.create({
+                    ...userData,
+                    password: hashPassword
+                })
+
+                resolve({
+                    EM: 'Create new user successfully',
+                    EC: 0,
+                    DT: []
+                })
+            }
+
+            // await db.User.create(data);
+            // resolve({
+            //     EM: 'create new user successfully',
+            //     EC: 0,
+            //     DT: []
+            // })
+        } catch (e) {
+            reject(e);
+        }
+    })
 }
 
 let updateUser = () => {
@@ -94,7 +143,7 @@ let deleteUser = (id) => {
 
 module.exports = {
     getAllUser,
-    createUser,
+    createNewUser,
     updateUser,
     deleteUser,
     getUserWithPaginate

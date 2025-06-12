@@ -127,5 +127,8 @@ let loginUser = async (userData) => {
 
 module.exports = {
     registerNewUser,
-    loginUser
+    loginUser,
+    hashUserPassword,
+    checkEmailExist,
+    checkPhoneExist
 }
