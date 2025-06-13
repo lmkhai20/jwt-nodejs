@@ -110,8 +110,42 @@ let createNewUser = (userData) => {
     })
 }
 
-let updateUser = () => {
-
+let updateUser = (dataUpdate) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            if(!dataUpdate.groupId){
+                resolve({
+                    EM: 'update error groupId empty',
+                    EC: 2,
+                    DT: 'group'
+                })
+            }
+            let user = await db.User.findOne({
+                where: {id: dataUpdate.id}
+            })
+            if(user && dataUpdate.groupId){
+                await user.update({
+                    username: dataUpdate.username,
+                    address: dataUpdate.address,
+                    sex: dataUpdate.sex,
+                    groupId: dataUpdate.groupId
+                })
+                resolve({
+                    EM: 'update user success',
+                    EC: 0,
+                    DT: []
+                })
+            } else {
+                resolve({
+                    EM: 'Not found user',
+                    EC: 1,
+                    DT: []
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
 }
 
 let deleteUser = (id) => {
