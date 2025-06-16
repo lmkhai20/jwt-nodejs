@@ -1,4 +1,5 @@
 import userApiService from '../service/userApiService';
+import roleApiService from '../service/roleApiService';
 
 let readFunc = async (req, res) => {
     try {
@@ -32,9 +33,9 @@ let readFunc = async (req, res) => {
     }
 }
 
-let createFunc = async (req, res) => {
+let createNewRole = async (req, res) => {
     try {
-        let data = await userApiService.createNewUser(req.body);
+        let data = await roleApiService.createNewRoles(req.body);
 
         return res.status(200).json({
             EM: data.EM,
@@ -90,23 +91,9 @@ let deleteFunc = async (req, res) => {
     }
 }
 
-let getUserAccount = async (req, res) => {
-    return res.status(200).json({
-        EM: 'okkk', // error message
-        EC: 0, // error code
-        DT: {
-            access_token: req.token,
-            groupWithRoles: req.user.groupWithRoles,
-            email: req.user.email,
-            username: req.user.username
-        } // data
-    })
-}
 
 module.exports = {
-    readFunc,
-    createFunc,
+    createNewRole,
     updateFunc,
     deleteFunc,
-    getUserAccount
 }

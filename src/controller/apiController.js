@@ -34,7 +34,7 @@ let handleRegister = async (req, res) => {
         })
         
     } catch (e) {
-        return res.status(200).json({
+        return res.status(500).json({
             EM: 'error form server', // error message
             EC: -1, // error code
             DT: '' // data
@@ -47,7 +47,9 @@ let handleLogin = async (req, res) => {
 
         let data = await authService.loginUser(req.body);
         //set cookie 
-        res.cookie('jwt', data.DT.access_token, { httpOnly : true, maxAge: 60 * 60 * 1000 });
+        if(data && data.DT && data.DT.access_token) {
+            res.cookie('jwt', data.DT.access_token, { httpOnly : true, maxAge: 60 * 60 * 1000 });
+        }
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
@@ -55,7 +57,27 @@ let handleLogin = async (req, res) => {
         })
     } catch (e) {
         console.log(e);
+        return res.status(500).json({
+            EM: 'error form server', // error message
+            EC: -1, // error code
+            DT: '' // data
+        })
+    }
+}
+
+const handleLogout = (req, res) => {
+    try {
+
+        res.clearCookie('jwt');
+
         return res.status(200).json({
+            EM: 'clear cookie done',
+            EC: 0,
+            DT: ''
+        })
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
             EM: 'error form server', // error message
             EC: -1, // error code
             DT: '' // data
@@ -66,5 +88,6 @@ let handleLogin = async (req, res) => {
 module.exports = {
     testApi,
     handleRegister,
-    handleLogin
+    handleLogin,
+    handleLogout
 }
