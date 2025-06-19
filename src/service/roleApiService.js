@@ -75,8 +75,60 @@ const deleteRole = (roleId) => {
     })
 }
 
+const getRoleByGroup = (id) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            if(!id) {
+                resolve({
+                    EM: 'Not found role id',
+                    EC: 0,
+                    DT: []
+                })
+            } else {
+                let roles = await db.Group.findOne({
+                    where: {id: id},
+                    attributes: ['id', 'name', 'description'],
+                    include: [{ 
+                        model: db.Role, 
+                        attributes: ['id', 'url', 'description'],
+                        through: {attributes: []}
+                    }]
+                })
+
+                resolve({
+                    EM: 'Get role by group success',
+                    EC: 0,
+                    DT: roles
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+const assignRoleToGroup = (data) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            await db.Group_Role.destroy({
+                where: {groupId: +data.groupId}
+            })
+            await db.Group_Role.bulkCreate(data.groupRoles);
+            resolve({
+                EM: 'Update group-role success',
+                EC: 0,
+                DT: []
+            })
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     createNewRoles,
     getAllRoles,
-    deleteRole
+    deleteRole,
+    getRoleByGroup,
+    assignRoleToGroup
 }
